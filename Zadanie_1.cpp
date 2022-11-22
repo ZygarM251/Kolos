@@ -35,8 +35,8 @@ int main()
 	cout << "Średnia geometryczna wynosi: " << g << endl;
 
 	double y = 0;
-	const int pi = 3.1415;
-	y = pow(g, pi) * log(s - 1 / s + 2);
+	const int pi = 3.1415,e=2.7182;
+	y = pow(g, pi) * log(e)*(s - 1 / s + 2);
 	cout << scientific << setprecision(2) << "Funkcja wynosi: " << y;
 
 
