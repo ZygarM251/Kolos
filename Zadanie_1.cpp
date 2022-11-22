@@ -30,7 +30,7 @@ int main()
 	cout << iloczyn << endl;
 
 	s = suma / ilosc_liczb;
-	g = pow(iloczyn, 1.0 / ilosc_liczb);
+	g = iloczyn /ilosc_liczb;
 	cout << "Średnia arytmetyczna wynosi: " << s << endl;
 	cout << "Średnia geometryczna wynosi: " << g << endl;
 
