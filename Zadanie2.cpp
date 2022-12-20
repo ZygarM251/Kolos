@@ -8,10 +8,14 @@ int main()
     int j = 0;
     int min = 0;
     int temp = 0;
+
     const int wiersz = 7;
     const int kolumna = 4;
+
     int tab[wiersz][kolumna] = {};
+
     srand(time(0));
+
     for (i = 0; i < wiersz; i++)
     {
         for (j = 0; j < kolumna; j++)
@@ -44,6 +48,7 @@ int main()
             min = i * kolumna;
         }
     }
+    cout << min << endl;
     cout << "najmniejszy element wybranej kolumny: " << temp << endl;
     for (i = 0; i < wiersz; i++)
     {
@@ -78,4 +83,76 @@ int main()
         }
         cout << endl;
     }
+}\\
+
+#ifdef ZadanieB
+
+double yk(double x, double yk, double n) {
+    return (1 / n) * (((n - 1) * yk) + (x / (pow(yk, n - 1))));
 }
+
+double rootStep(double x, double ykn, double n) {
+    double fstep = yk(x, ykn, n);
+    double Sstep = yk(x, fstep, n);
+
+    return Sstep;
+}
+
+double root(double x, int n, double E, bool& err) {
+
+    if (n <= 0 || x <= 0.0) {
+        err = true;
+        return 0;
+    }
+
+    double fstep = yk(x, x, n);
+    double Sstep = yk(x, fstep, n);
+
+    long k = 0;
+
+    do {
+        fstep = Sstep;
+
+        double temp = rootStep(x, fstep, n);
+        Sstep = temp;
+
+        k++;
+
+        //std::cout << abs(Sstep - fstep)<<std::endl;
+
+        if (k < 3)
+            continue;
+
+    } while (abs(Sstep - fstep) >= E);
+
+    return Sstep;
+}
+
+
+int main()
+{
+    // TU ROZWIĄZUJ ZADANIE B:
+    //startowo yk = x
+
+    double x;
+    int n;
+    double E;
+
+    std::cout << "Podaj x:";
+    std::cin >> x;
+
+    std::cout << "Podaj n:";
+    std::cin >> n;
+
+    std::cout << "Podaj E:";
+    std::cin >> E;
+
+    bool err = false;
+    double res = root(x, n, E, err);
+
+    if (!err)
+        std::cout << "Result: " << res;
+    else
+        std::cout << "Result: " << "Error :(";
+}
+#endif
