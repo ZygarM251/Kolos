@@ -156,3 +156,40 @@ int main()
         std::cout << "Result: " << "Error :(";
 }
 #endif
+
+#ifdef ZadanieB
+double obliczenia(double x, int n, double dokladnosc)
+{
+    //double y = pow(x, 1/n);
+    double y; //yk
+    double drugiy = x; //yk+1
+    do
+    {
+        y = drugiy;
+        drugiy = (1.0 / n) * ((n - 1.0) * y + x / pow(y, n - 1.0));
+
+    } while (abs((drugiy - y)) > dokladnosc);
+    return y;
+}
+int main()
+{
+    setlocale(LC_ALL, "");
+    int n;
+    double x, dokladnosc;
+    cout << "Podaj liczbę pierwiastkowaną x: ";
+    cin >> x;
+    cout << "Podaj stopień pierwiastka n: ";
+    cin >> n;
+    cout << "Podaj dokładność obliczeń: ";
+    cin >> dokladnosc;
+    if (n > 0 && x > 0.0)
+    {
+        double wynik = obliczenia(x, n, dokladnosc);
+        cout << "Wartość y wynosi: " << wynik << endl;
+    }
+    else
+    {
+        cout << "Podano nieprawidłową wartość x lub n - BŁĄD PROGRAMU!";
+    }
+}
+#endif
