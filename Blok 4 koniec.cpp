@@ -40,6 +40,8 @@ double całkowanie(double xp, double xk, double e,int &n)
 			   /* Dodaj wyliczone pole trapezu do aktualnego oszacowania całki */
 			pole += Pole_trapezu;
 		}
+		roznica = fabs(pole - PolePop);
+		PolePop = pole;
 	} while (roznica > e);
 	/* Zwroc oszacowanie całki jako wynik funkcji */
 	return pole;
