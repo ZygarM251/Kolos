@@ -1,11 +1,13 @@
 ﻿// Wika.cpp : Ten plik zawiera funkcję „main”. W nim rozpoczyna się i kończy wykonywanie programu.
 //
 
-#include <iostream>
+#include <string.h>
+#include <conio.h>
+#include <cstdlib>
 #include <ctime>
 using namespace std;
 //Zmieniając ostatnią literę w poniższej instrukcji na A, B, lub C wybierasz aktywne zadanie.
-#define ZadanieB 
+#define Zadanie D
 
 #ifdef ZadanieA
 
@@ -367,9 +369,66 @@ int main()
 
 #endif
 
-#ifdef ZadanieC
+
+
+#ifdef Zadanie D
+
+// Tu umieszczaj "includy" do zadania podstawowego
+/*#define _CRT_SECURE_NO_WARNINGS*/
+
+void losowanie(char** tablica, int liczba_graczy, int liczba_rund)
+{
+	srand(time(0));
+	for (int i = 0; i < liczba_rund; i++)
+	{
+		//nieprawidłowe losowanie:(
+		cout << "Runda " << liczba_rund << ":";
+		for (int j = 0; j < liczba_graczy; j++)
+		{
+			int losowanie = rand() % liczba_graczy;
+			cout << tablica[losowanie];
+			cout << ",";
+		}
+		cout << ";" << endl;
+	}
+}
 int main()
 {
-	// TU ROZWIĄZUJ ZADANIE C:
+	//błąd w kodzie: podawana liczba graczy musi być większa o 1 niż porządana, nie wiem dlaczego:(
+	setlocale(LC_ALL, "");
+	int liczba_graczy, liczba_rund;
+	cout << "Podaj liczbe graczy: ";
+	cin >> liczba_graczy;
+	cout << "Podaj imiona graczy: " << endl;
+	char** tablica = new char* [liczba_graczy];
+	for (int i = 0; i < liczba_graczy; i++)
+	{
+		tablica[i] = new char[100];
+	}
+	for (int i = 0; i < liczba_graczy; i++)
+	{
+		char temp[100] = {};
+		cin.getline(temp, 100);
+		strcpy(tablica[i], temp);
+	}
+	for (int i = 0; i < liczba_graczy; i++)
+	{
+		cout << tablica[i] << endl;
+	}
+	cout << endl << "Podaj liczbe rund: ";
+	cin >> liczba_rund;
+	losowanie(tablica, liczba_graczy, liczba_rund);
+	if (losowanie != nullptr)
+	{
+		for (int i = 0; i < liczba_graczy; i++)
+		{
+			delete[] tablica[i];
+		}
+		delete[] tablica;
+	}
+	//Tu umieszczaj treść pliku main zadania podstawowego
+
 }
 #endif
+
+
