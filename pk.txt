@@ -1,0 +1,440 @@
+?#include "Wybor.h"
+using namespace std;
+
+/*
+* Uwaga: Zadania kod rozwiazania zaania umieszczaæ pomiêdzy #ifdef a #endif. 
+*/
+
+#ifdef Zad_1_1
+#include <cmath>
+#include <string>
+#include <vector>
+
+class Punkt;
+
+class Wektor
+{
+	double m_dx = 0.0, m_dy = 0.0;
+public:
+	void setDXY(double dx, double dy)
+	{
+		m_dx = dx;
+		m_dy = dy;
+	}
+	double getDX() const { return m_dx; }
+	double getDY() const { return m_dy; }
+	double dlugosc() const { return sqrt(m_dx * m_dx + m_dy * m_dy); }
+	static Punkt konwersjaNieformalnaPunkt(const Wektor& wek, double n = 1);
+	Wektor(double dx, double dy)
+		:m_dx(dx), m_dy(dy)
+	{}
+};
+
+class Punkt
+{
+	double m_x = 0.0, m_y = 0.0;
+public:
+	void setXY(double x, double y)
+	{
+		m_x = x;
+		m_y = y;
+	}
+	double getX() const { return m_x; }
+	double getY() const { return m_y; }
+	void konwersjaNieformalnaWektor(Wektor w, double n = 1);
+	Punkt(double x, double y)
+		:m_x(x), m_y(y)
+	{}
+
+	bool operator==(const Punkt& pkt) const
+	{
+		return (m_x == pkt.m_x) && (m_y == pkt.m_y);
+	}
+
+	Punkt operator+(const Wektor& w) const;
+
+	//Da³em metode do klasy punkt, poniewa¿ klasy powinny byæ w miejscach
+	// w których s¹ konwertowane wiec umiesci³em j¹ w klasie punkt bo s¹ to 2 punkty na wektor
+	static Wektor konwersjaNieformalna2PktWek(Punkt p1, Punkt p2) {
+		double dx = p2.getX() - p1.getX();
+		double dy = p2.getY() - p1.getY();
+		double dlugosc = sqrt((dx * dx) + (dy * dy));
+		dx = dx / dlugosc;
+		dy = dy / dlugosc;
+		return Wektor(dx, dy);
+	}
+};
+
+Punkt Punkt::operator+(const Wektor& w) const {
+	double newX = this->m_x + w.getDX();
+	double newY = this->m_y + w.getDY();
+	return Punkt(newX, newY);
+}
+
+
+class Kwadrat
+{
+	Punkt m_lewy_dolny, m_prawy_gorny;
+public:
+	void setRogi(Punkt ld, Punkt pg)
+	{
+		m_lewy_dolny = ld;
+		m_prawy_gorny = pg;
+	}
+	Punkt getLewyDolny() const { return m_lewy_dolny; }
+	Punkt getPrawyGorny() const { return m_prawy_gorny; }
+	Kwadrat(Punkt ld, Punkt pg)
+		:m_lewy_dolny(ld), m_prawy_gorny(pg)
+	{}
+
+	double poleKwadratu() const {
+		double Powierzchnia = sqrt(pow(m_prawy_gorny.getX() - m_lewy_dolny.getX(), 2) + pow(m_prawy_gorny.getY() - m_lewy_dolny.getY(), 2));
+		return pow(Powierzchnia, 0.5);
+	}
+
+	bool operator==(const Kwadrat& kw) const {
+		return abs(this->poleKwadratu() - kw.poleKwadratu()) < 0.0001;
+	}
+
+	explicit operator Wektor() const {
+		double X = m_prawy_gorny.getX() - m_lewy_dolny.getX();
+		double Y = m_prawy_gorny.getY() - m_lewy_dolny.getY();
+		return Wektor(X, Y);
+	}
+
+	Kwadrat(Punkt pkt) :m_lewy_dolny(pkt), m_prawy_gorny(-pkt.getX(),-pkt.getY())
+	{}
+};
+
+
+Punkt Wektor::konwersjaNieformalnaPunkt(const Wektor &wek, double n) {
+	double newX = wek.m_dx * n;
+	double newY = wek.m_dy * n;
+	return Punkt(newX, newY);
+}
+void Punkt::konwersjaNieformalnaWektor(Wektor w, double n) {
+	double newX = m_x + w.getDX() * n;
+	double newY = m_y + w.getDY() * n;
+	setXY(newX, newY);
+}
+
+void Test1PunktNaKwadrat() {
+	Punkt pkt(2, 2);
+	Punkt pktzero(-2, -2);
+	Kwadrat KwDoporownania(pktzero, pkt);
+	Kwadrat Wynik(pktzero);
+	if (KwDoporownania == Wynik) {
+		cerr << "Ok" << endl;
+	}
+	else { cerr << "Not ok" << endl; }
+}
+
+void Test2PunktNaKwadrat() {
+	Punkt pkt(6, 2);
+	Punkt pktzero(-6, -2);
+	Kwadrat KwDoporownania(pktzero, pkt);
+	Kwadrat Wynik(pktzero);
+	if (KwDoporownania == Wynik) {
+		cerr << "Ok" << endl;
+	}
+	else { cerr << "Not ok" << endl; }
+}
+
+void Test1WektorNaPunkt() {
+	Wektor Wek(5, 10);
+	int ileRazyMnozymy = 2;
+	Punkt Dosprawdzenia(10, 20);
+	Punkt NowyPunkt = Wektor::konwersjaNieformalnaPunkt(Wek, ileRazyMnozymy);
+	if (Dosprawdzenia == NowyPunkt) {
+		cerr << "OK" << endl;
+	}
+	else { cerr << "Nie Ok" << endl; }
+}
+
+void Test2WektorNaPunkt() {
+	Wektor Wek(6, 3);
+	int ileRazyMnozymy = 3;
+	Punkt Dosprawdzenia(18, 9);
+	Punkt NowyPunkt = Wektor::konwersjaNieformalnaPunkt(Wek, ileRazyMnozymy);
+	if (Dosprawdzenia == NowyPunkt) {
+		cerr << "OK" << endl;
+	}
+	else { cerr << "Nie Ok" << endl; }
+}
+
+void Test1OperatorRownasie() {
+	Punkt a(2, 2), b(4,4);
+	Kwadrat Pierwszy(a, b);
+	Kwadrat Drugi(a, b);
+	double polePierwszego = Pierwszy.poleKwadratu();
+	double poleDrugiego = Drugi.poleKwadratu();
+	if (polePierwszego == poleDrugiego) {
+		cerr << "OK" << endl;
+	}
+	else { cerr << "Nie Ok" << endl; }
+}
+
+void Test2OperatorRownasie() {
+	Punkt a(2, 4), b(4, 5);
+	Kwadrat Pierwszy(a, b);
+	Kwadrat Drugi(b, b);
+	double polePierwszego = Pierwszy.poleKwadratu();
+	double poleDrugiego = Drugi.poleKwadratu();
+	if (polePierwszego != poleDrugiego) {
+		cerr << "OK" << endl;
+	}
+	else { cerr << "Nie Ok" << endl; }
+}
+
+void testOperatorPlus() {
+	Punkt punkt(4, 3), DoSprawdzenia(6,4);
+	Wektor wektor(2, 1);
+	Punkt WynikDzialania = punkt + wektor;
+	if (WynikDzialania == DoSprawdzenia) {
+		cerr << "OK" << endl;
+	}
+	else { cerr << "Nie Ok" << endl; }
+}
+
+void test2OperatorPlus() {
+	Punkt punkt(4, 3), DoSprawdzenia(3, 2);
+	Wektor wektor(2, 1);
+	Punkt WynikDzialania = punkt + wektor;
+	if (WynikDzialania.getX() != DoSprawdzenia.getX() || WynikDzialania.getY() != DoSprawdzenia.getY()) {
+		cerr << "OK" << endl;
+	}
+	else { cerr << "Nie Ok" << endl; }
+
+}
+
+
+void testKonwersjaForKwWek() {
+	Punkt LewDolny(1, 1), PrawyGorny(4, 5);
+	Kwadrat kw(LewDolny, PrawyGorny);
+	Wektor DoPorownania(3, 4);
+	Wektor Wynik = static_cast<Wektor>(kw);
+	if (Wynik.getDX() == DoPorownania.getDX() && Wynik.getDY() == DoPorownania.getDY()) {
+		cerr << "OK" << endl;
+	}
+	else { cerr << "Nie Ok" << endl; }
+}
+
+void test2KonwersjaForKwWek() {
+	Punkt LewDolny(1, 1), PrawyGorny(4, 5);
+	Kwadrat kw(LewDolny, PrawyGorny);
+	Wektor DoPorownania(6, 4);
+	Wektor Wynik = static_cast<Wektor>(kw);
+	if (Wynik.getDX() != DoPorownania.getDX() || Wynik.getDY() != DoPorownania.getDY()) {
+		cerr << "OK" << endl;
+	}
+	else { cerr << "Nie Ok" << endl; }
+}
+
+
+void testNieformalnaDwaPunktyNaWek() {
+	Punkt p1(1, 1), p2(4, 5);
+	double dlugosc = sqrt((3 * 3) + (4 * 4));
+	Wektor wynik = Punkt::konwersjaNieformalna2PktWek(p1, p2);
+	if (wynik.getDX() == 3.0/dlugosc && wynik.getDY() == 4.0/dlugosc) {
+		cerr << "OK" << endl;
+	}
+	else {
+		cerr << "Nie OK" << endl;
+	}
+}
+
+void test2NieformalnaDwaPunktyNaWek() {
+	Punkt p1(2, 2), p2(4, 5);
+	double dlugosc = sqrt((2 * 2) + (3 * 3));
+	Wektor wynik = Punkt::konwersjaNieformalna2PktWek(p1, p2);
+	if (wynik.getDX() == 2.0 / dlugosc && wynik.getDY() == 3.0 / dlugosc) {
+		cerr << "OK" << endl;
+	}
+	else {
+		cerr << "Nie OK" << endl;
+	}
+}
+
+int main() {
+	Test1PunktNaKwadrat();
+	Test2PunktNaKwadrat();
+	Test1WektorNaPunkt();
+	Test2WektorNaPunkt();
+	Test1OperatorRownasie();
+	Test2OperatorRownasie();
+	testOperatorPlus();
+	test2OperatorPlus();
+	testKonwersjaForKwWek();
+	test2KonwersjaForKwWek();
+	testNieformalnaDwaPunktyNaWek();
+	test2NieformalnaDwaPunktyNaWek();
+}
+#endif
+
+#ifdef Zad_1_2
+
+int main()
+{
+
+}
+
+#endif
+
+#ifdef Zad_1_3
+#include <iostream>
+#include <iomanip>
+using namespace std;
+
+enum class kierunek
+{
+	rosnaco,
+	malejaco
+};
+
+class PrzetwarzanieTablic
+{
+public:
+	virtual void operator()(double* tab, const size_t SIZE) = 0;
+};
+
+class funktorStortujact : public PrzetwarzanieTablic
+{
+	kierunek m_kier;
+public:
+	funktorStortujact(kierunek kier) :m_kier(kier) {}
+
+	void setKier(kierunek kier) { m_kier = kier; }
+
+	void operator()(double* tab, const size_t SIZE) override {
+		if (tab != nullptr && SIZE > 1)
+		{
+			if (m_kier == kierunek::rosnaco)
+			{
+				for (int i = 0; i < SIZE - 1; i++)
+					for (int j = i + 1; j < SIZE; j++)
+						if (tab[i] > tab[j])
+							swap(tab[i], tab[j]);
+			}
+			else
+				for (int i = 0; i < SIZE - 1; i++)
+					for (int j = i + 1; j < SIZE; j++)
+						if (tab[i] < tab[j])
+							swap(tab[i], tab[j]);
+		}
+	}
+};
+
+class funktorWyszukujacy : public PrzetwarzanieTablic
+{
+	double m_szukana;
+	int m_wynik;
+public:
+	funktorWyszukujacy(double szukana) :m_szukana(szukana){}
+	int getWynik() { return m_wynik; }
+	void operator()(double* tab, const size_t SIZE) override {
+		if (tab != nullptr && SIZE > 0)
+		{
+			for (int i = 0; i < SIZE; i++)
+				if (tab[i] == m_szukana)
+					m_wynik = i;
+		}
+	}
+};
+
+
+class funktorSkramblujacy : public PrzetwarzanieTablic
+{
+public:
+	void operator()(double* tab, const size_t SIZE) override {
+		if (tab != nullptr && SIZE > 1)
+		{
+			int n = SIZE - 1;
+			while (n > 1)
+			{
+				size_t idx = rand() % (n + 1);
+				swap(tab[idx], tab[n--]);
+			}
+		}
+	}
+};
+
+
+class funktorStopniaUporzadkowania : public PrzetwarzanieTablic
+{
+	kierunek m_kier;
+	double m_wynik;
+public:
+	funktorStopniaUporzadkowania(kierunek kier) : m_kier(kier) {}
+	double getWynik() { return m_wynik; }
+	void operator()(double* tab, const size_t SIZE) override {
+		if (tab != nullptr && SIZE > 1)
+		{
+			size_t liczbaPoprawnych = 0;
+			if (m_kier == kierunek::rosnaco)
+			{
+				for (int i = 0; i < SIZE; i++)
+				{
+					for (int j = 0; j < i; j++)
+						if (tab[j] <= tab[i]) liczbaPoprawnych++;
+					for (int j = i + 1; j < SIZE; j++)
+						if (tab[j] >= tab[i]) liczbaPoprawnych++;
+				}
+			}
+			else
+			{
+				for (int i = 0; i < SIZE; i++)
+				{
+					for (int j = 0; j < i; j++)
+						if (tab[j] >= tab[i]) liczbaPoprawnych++;
+					for (int j = i + 1; j < SIZE; j++)
+						if (tab[j] <= tab[i]) liczbaPoprawnych++;
+				}
+			}
+			m_wynik = 1.0 * liczbaPoprawnych / (SIZE * (SIZE - 1));
+		}
+		else m_wynik = -1.0;
+	}
+};
+
+class funktorWypisujacy : public PrzetwarzanieTablic
+{
+	char m_sep;
+public:
+	funktorWypisujacy(char sep):m_sep(sep){}
+
+	void operator()(double* tab, const size_t SIZE) override {
+		cout << fixed << setprecision(2);
+		if (tab != nullptr && SIZE > 1)
+		{
+			cout << "[ ";
+			for (int i = 0; i < SIZE - 1; i++)
+				cout << tab[i] << m_sep << " ";
+			cout << tab[SIZE - 1] << " ]\n";
+		}
+		else cout << "[]\n";
+	}
+};
+
+
+int main()
+{
+	const size_t SIZE = 5;
+	double tablica[SIZE] = { 3.14, 1.0, 2.71, 0.0, -1.0 };
+
+	funktorStortujact funSort(kierunek::rosnaco);
+	funktorWyszukujacy funWysz(2.71);
+	funktorSkramblujacy funSkr;
+	funktorStopniaUporzadkowania funStop(kierunek::rosnaco);
+	funktorWypisujacy funWypisz(',');
+
+	PrzetwarzanieTablic* przetwarzanieTablic[5] = {&funSort, &funWysz,&funSkr,&funStop,&funWypisz};
+
+	for (int i = 0; i < 5; i++)
+	{
+		(*przetwarzanieTablic[i])(tablica, SIZE);
+	}
+
+	return 0;
+}
+
+#endif
