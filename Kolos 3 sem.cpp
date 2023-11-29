@@ -1,0 +1,163 @@
+#include <iostream>
+#include "zbior.h"
+#include <new>
+#include <cmath>
+#include <algorithm>
+#include <random>
+
+using namespace std;
+
+void Zbior::alokuj(int n)
+{
+    if (n > 0)
+    {
+        m_elementy = new(std::nothrow) double[n];
+        m_liczbaElementow = n;
+    }
+}
+
+void Zbior::zwolnij()
+{
+    if (m_elementy != nullptr)
+    {
+        delete[] m_elementy;
+        m_elementy = nullptr;
+    }
+}
+
+Zbior::Zbior(size_t liczElem, double dGran, double gGran)
+{
+    alokuj(liczElem);
+    std::uniform_real_distribution<double> zakres(dGran, gGran);
+    std::random_device generator;
+    for (size_t elem = 0; elem < liczElem; elem++)
+        m_elementy[elem] = zakres(generator);
+}
+
+Zbior::Zbior(const Zbior& z) :
+    m_liczbaElementow(z.m_liczbaElementow),
+    m_dolnaGranica(z.m_dolnaGranica),
+    m_gornaGranica(z.m_gornaGranica)
+{
+    alokuj(z.m_liczbaElementow);
+    for (size_t i = 0; i < z.m_liczbaElementow; i++)
+        m_elementy[i] = z.m_elementy[i];
+}
+
+Zbior& Zbior::operator=(const Zbior& z)
+{
+    if (this != &z)
+    {
+        bool roznyRozmiar = m_liczbaElementow != z.m_liczbaElementow;
+        if (m_elementy != nullptr && roznyRozmiar)
+            zwolnij();
+        if (z.m_elementy != nullptr)
+        {
+            if (roznyRozmiar) alokuj(z.m_liczbaElementow);
+
+            for (size_t i = 0; i < z.m_liczbaElementow; i++)
+                m_elementy[i] = z.m_elementy[i];
+        }
+        m_liczbaElementow = z.m_liczbaElementow;
+        m_dolnaGranica = z.m_dolnaGranica;
+        m_gornaGranica = z.m_gornaGranica;
+    }
+    return *this;
+}
+
+bool Zbior::operator==(const Zbior& zbior) const
+{
+    if (m_liczbaElementow != zbior.m_liczbaElementow)
+    {
+        return false;
+    }
+    else if (m_dolnaGranica != zbior.m_dolnaGranica)
+    {
+        return false;
+    }
+    else if (m_gornaGranica != zbior.m_gornaGranica)
+    {
+        return false;
+    }
+    else
+    {
+        const double tolerancja = 0.000001;
+        for (size_t i = 0; i < m_liczbaElementow; i++)
+        {
+            if (abs(m_elementy[i] - zbior.m_elementy[i]) < tolerancja)
+                return false;
+        }
+    }
+    return true;
+}
+
+bool Zbior::operator!=(const Zbior& zbior) {
+    return !(this->m_elementy == zbior.m_elementy);
+}
+
+void TestOperatoraPorownania()
+{
+    Zbior zbior1(3, 1.0, 5.0);
+    Zbior zbior2(3, 1.0, 5.0);
+
+    if (zbior1 == zbior2)
+    {
+        cout << "Test1 : OK" << endl;
+    }
+    else
+    {
+        cout << "Test1 : FAIL" << endl;
+    }
+
+}
+
+void TestOperatoraNieRownosci()
+{
+    Zbior zbior1(7, 2.0, 5.0);
+    Zbior zbior2(3, 1.0, 5.0);
+
+    if (zbior1 != zbior2)
+    {
+        cout << "Test1 : OK" << endl;
+    }
+    else
+    {
+        cout << "Test1 : FAIL" << endl;
+    }
+}
+
+int main()
+{
+    TestOperatoraPorownania();
+    TestOperatoraNieRownosci();
+
+    int n;
+    while (true) {
+        cout << "Podaj parzysta i dodatnia liczbe n: ";
+        cin >> n;
+
+        if (cin.fail() || n <= 0 || n % 2 != 0)
+        {
+            cout << "Podano nieprawidlowa liczbe. Sprobuj ponownie." << endl;
+        }
+        else {
+            break;
+        }
+    }
+
+    vector<Zbior> wektor;
+
+
+    for (size_t i = 0; i < n; ++i) {
+        Zbior zbior(3, 1.0, 10.0);
+        wektor.push_back(zbior);
+    }
+    sort(wektor.begin(), wektor.end(), greater<Zbior>());
+
+    cout << "Posortowane zbiory (malejaco):" << endl;
+    for (const auto& zbior : wektor) {
+        cout << "Srednia: " << zbior.srednia() << endl;
+    }
+
+
+}
